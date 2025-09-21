@@ -21,7 +21,6 @@ pipeline {
                     url: 'https://github.com/DIOUF-MOR/mor_diouf_examen_devops_e221.git'
             }
         }
-
         stage('Build') {
             steps {
                 sh 'mvn clean package -DskipTests'
