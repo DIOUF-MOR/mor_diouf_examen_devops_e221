@@ -16,9 +16,23 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
-                    credentialsId: 'github-token',
-                    url: 'https://github.com/DIOUF-MOR/mor_diouf_examen_devops_e221.git'
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: 'main']],
+                    extensions: [
+                        [$class: 'CloneOption',
+                         depth: 1,
+                         noTags: false,
+                         reference: '',
+                         shallow: true,
+                         timeout: 60
+                        ]
+                    ],
+                    userRemoteConfigs: [[
+                        credentialsId: 'github-token',
+                        url: 'https://github.com/DIOUF-MOR/mor_diouf_examen_devops_e221.git'
+                    ]]
+                ])
             }
         }
         stage('Build') {
