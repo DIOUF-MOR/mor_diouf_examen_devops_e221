@@ -12,7 +12,6 @@ public class DemoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 	}
-
 	@RequestMapping("/")
   public String home() {
     return "Hello world! This web application created uisng java spring boot framework and depolyed in kubernetes .";
