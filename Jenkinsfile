@@ -46,6 +46,7 @@ pipeline {
                 }
             }
         }
+
         stage('Push to DockerHub') {
             steps {
                 script {
