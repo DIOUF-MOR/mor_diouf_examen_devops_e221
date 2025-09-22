@@ -5,12 +5,12 @@ pipeline {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
         DOCKERHUB_REPO = 'DIOUF-MOR/mor_diouf_examen_devops_e221'
         RENDER_API_KEY = credentials('render-api-key')
-        RENDER_SERVICE_ID = 'votre-service-id-render'
+        RENDER_SERVICE_ID = 'srv-d3808q3e5dus739ooksg'
     }
 
     tools {
-        maven 'Maven-3.8'
-        jdk 'JDK-11'
+        maven 'Maven-3.8' // Assurez-vous que Maven est configuré dans Jenkins
+        jdk 'JDK-11'      // Assurez-vous que JDK 11 est configuré
     }
 
     stages {
@@ -18,9 +18,15 @@ pipeline {
             steps {
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/main']],
+                    branches: [[name: 'main']],
                     extensions: [
-                        [$class: 'CloneOption', depth: 1, shallow: true]
+                        [$class: 'CloneOption',
+                         depth: 1,
+                         noTags: false,
+                         reference: '',
+                         shallow: true,
+                         timeout: 60
+                        ]
                     ],
                     userRemoteConfigs: [[
                         credentialsId: 'github-token',
@@ -29,7 +35,6 @@ pipeline {
                 ])
             }
         }
-
         stage('Build') {
             steps {
                 sh 'mvn clean package -DskipTests'
@@ -50,10 +55,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    sh """
-                        docker build -t ${DOCKERHUB_REPO}:${BUILD_NUMBER} .
-                        docker tag ${DOCKERHUB_REPO}:${BUILD_NUMBER} ${DOCKERHUB_REPO}:latest
-                    """
+                    sh "docker build -t ${DOCKERHUB_REPO}:${BUILD_NUMBER} ."
+                    sh "docker tag ${DOCKERHUB_REPO}:${BUILD_NUMBER} ${DOCKERHUB_REPO}:latest"
                 }
             }
         }
@@ -61,11 +64,9 @@ pipeline {
         stage('Push to DockerHub') {
             steps {
                 script {
-                    sh """
-                        echo \$DOCKERHUB_CREDENTIALS_PSW | docker login -u \$DOCKERHUB_CREDENTIALS_USR --password-stdin
-                        docker push ${DOCKERHUB_REPO}:${BUILD_NUMBER}
-                        docker push ${DOCKERHUB_REPO}:latest
-                    """
+                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                    sh "docker push ${DOCKERHUB_REPO}:${BUILD_NUMBER}"
+                    sh "docker push ${DOCKERHUB_REPO}:latest"
                 }
             }
             post {
@@ -79,10 +80,12 @@ pipeline {
             steps {
                 script {
                     sh """
-                        curl -X POST https://api.render.com/v1/services/\${RENDER_SERVICE_ID}/deploys \
-                        -H "Authorization: Bearer \${RENDER_API_KEY}" \
+                        curl -X POST https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys \
+                        -H "Authorization: Bearer ${RENDER_API_KEY}" \
                         -H "Content-Type: application/json" \
-                        -d '{"clearCache": "clear"}'
+                        -d '{
+                            "clearCache": "clear"
+                        }'
                     """
                 }
             }
@@ -97,7 +100,7 @@ pipeline {
             echo '❌ Le pipeline a échoué.'
         }
         always {
-            deleteDir()  // Nettoyage du workspace
+           deleteDir()
         }
     }
 }
