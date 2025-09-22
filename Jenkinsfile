@@ -50,10 +50,16 @@ pipeline {
             steps {
                 script {
                     sh """
+                        echo "Tentative de connexion à DockerHub..."
                         echo \$DOCKERHUB_CREDENTIALS_PSW | docker login -u \$DOCKERHUB_CREDENTIALS_USR --password-stdin
+
+                        echo "Push de l'image ${DOCKERHUB_REPO}:${BUILD_NUMBER}..."
                         docker push ${DOCKERHUB_REPO}:${BUILD_NUMBER}
+
+                        echo "Push de l'image ${DOCKERHUB_REPO}:latest..."
                         docker push ${DOCKERHUB_REPO}:latest
-                        echo "✅ Image poussée vers Docker Hub: ${DOCKERHUB_REPO}:latest"
+
+                        echo "✅ Images poussées avec succès vers DockerHub"
                     """
                 }
             }
