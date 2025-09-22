@@ -16,23 +16,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: 'main']],
-                    extensions: [
-                        [$class: 'CloneOption',
-                         depth: 1,
-                         noTags: false,
-                         reference: '',
-                         shallow: true,
-                         timeout: 60
-                        ]
-                    ],
-                    userRemoteConfigs: [[
-                        credentialsId: 'github-token',
-                        url: 'https://github.com/DIOUF-MOR/mor_diouf_examen_devops_e221.git'
-                    ]]
-                ])
+                git branch: 'main',
+                    credentialsId: 'github-token',
+                    url: 'https://github.com/DIOUF-MOR/mor_diouf_examen_devops_e221.git'
             }
         }
         stage('Build') {
@@ -100,7 +86,7 @@ pipeline {
             echo '❌ Le pipeline a échoué.'
         }
         always {
-           deleteDir()
+            cleanWs()
         }
     }
 }
