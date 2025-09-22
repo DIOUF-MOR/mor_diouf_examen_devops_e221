@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
-        DOCKERHUB_REPO = 'DIOUF-MOR/mor_diouf_examen_devops_e221'
+        DOCKERHUB_REPO = 'daaroukhoudos04/mor_diouf_examen_devops_e221'
         RENDER_API_KEY = credentials('render-api-key')
         RENDER_SERVICE_ID = 'srv-d3808q3e5dus739ooksg'
     }
