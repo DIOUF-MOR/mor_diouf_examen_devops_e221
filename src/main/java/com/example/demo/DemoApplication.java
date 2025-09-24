@@ -14,6 +14,6 @@ public class DemoApplication {
 	}
 	@RequestMapping("/")
   public String home() {
-    return "Hello world! This web application created test ok uisng java spring boot framework and depolyed in kubernetes .";
+    return "Hello world! This web application created uisng java spring boot framework and depolyed in kubernetes .";
   }
 }
